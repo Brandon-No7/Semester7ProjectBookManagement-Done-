@@ -83,7 +83,7 @@
             </label>
         </div>
 <h2 style=" margin-left: 45%;">Update User</h2>
-        <form action="${pageContext.request.contextPath }/update_user.do" method="post" style="margin-top:50px;">
+        <form onsubmit="return check()" action="${pageContext.request.contextPath }/update_user.do" method="post" style="margin-top:50px;">
             <table>
                 <tr>
                     <th>User Name</th>
@@ -97,15 +97,56 @@
                 <c:forEach items="${user_list}" var="us">
                 <tr>
                 	<input name="id" type="hidden" value="${us.id}" />
-                    <td><input name="username" type="text" value="${us.username }" style=" margin-left: 0px; width: 95%; text-align: center;" /></td>
-                    <td><input name="password" type="text" value="${us.password }" style=" margin-left: 0px; width: 95%; text-align: center;" /></td>
-                    <td><input name="gender" type="text" value="${us.gender }" style=" margin-left: 0px; width: 95%; text-align: center;" /></td>
-                    <td><input name="phone" type="text" value="${us.phone }" style=" margin-left: 0px; width: 95%; text-align: center;" /></td>
-                    <td><input name="email" type="text" value="${us.email }" style=" margin-left: 0px; width: 95%; text-align: center;" /></td>
+                    <td><input name="username" id="username" type="text" value="${us.username }" style=" margin-left: 0px; width: 95%; text-align: center;" /></td>
+                    <td><input name="password" id="password" type="text" value="${us.password }" style=" margin-left: 0px; width: 95%; text-align: center;" /></td>
+                    <td><input name="gender" id="gender" type="text" value="${us.gender }" style=" margin-left: 0px; width: 95%; text-align: center;" /></td>
+                    <td><input name="phone" id="phone" type="text" value="${us.phone }" style=" margin-left: 0px; width: 95%; text-align: center;" /></td>
+                    <td><input name="email" type="email" value="${us.email }" style=" margin-left: 0px; width: 95%; text-align: center;" /></td>
                 </tr>
                 </c:forEach>
             </table>
             <input type="submit" value="Save" style="margin-left: 48%" />
         </form>
+        <script type="text/javascript">
+function check(){
+	//验证用户名
+	var name=document.getElementById("username").value;
+	if(name.length<4||name.length>14)
+    {
+        alert("The length of the user name must be between 6 and 14 words！");
+        return false;
+    }
+	if(name.charAt(0)<'A'||name.charAt(0)>'z')
+    {
+        alert("The user name must start with a letter!");
+        return false;
+    }
+	//验证密码
+	var pass = document.getElementById("password").value;
+	if(pass.length<6||pass.length>16)
+    {
+        alert("The length of the password must be between 6 and 16 words！");
+        return false;
+    }
+	//验证性别
+	var gender = document.getElementById("gender").value;
+	if(gender!="Female"&&gender!="Male"){
+		alert("Gender can only be filled in Male or Female！");
+		return false;
+	}
+	//验证手机号
+	var p = document.getElementById('phone');
+	var str = /[a-zA-Z]/i;
+	p = p.value;
+	if (p.length != 11) {
+		alert("Please enter the correct mobile phone number！");
+		return false;
+	}
+	if(str.test(p) == true){
+		alert("Please enter the correct mobile phone number！");
+		return false;
+	}
+}
+</script>
 </body>
 </html>

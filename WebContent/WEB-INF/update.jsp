@@ -83,7 +83,7 @@
             </label>
         </div>
 <h2 style=" margin-left: 45%;">Update Book</h2>
-        <form action="${pageContext.request.contextPath }/update_book.do" method="post" style="margin-top:50px;">
+        <form action="${pageContext.request.contextPath }/update_book.do" onsubmit="return check()" method="post" style="margin-top:50px;">
             <table>
                 <tr>
                     <th>Book name</th>
@@ -103,13 +103,28 @@
                     <td><input name="author" type="text" value="${bk.author }" style=" margin-left: 0px; width: 95%; text-align: center;" /></td>
                     <td><input name="description" type="text" value="${bk.description }" style=" margin-left: 0px; width: 95%; text-align: center;" /></td>
                     <td><input name="publisher" type="text" value="${bk.publisher}" style=" margin-left: 0px; width: 95%; text-align: center;" /></td>
-                    <td><input name="totalnumber" type="text" value="${bk.totalnumber }" style=" margin-left: 0px; width: 95%; text-align: center;" /></td>
-                    <td><input name="currentnumber" type="text" value="${bk.currentnumber }" style=" margin-left: 0px; width: 95%; text-align: center;" /></td>
+                    <td><input name="totalnumber" type="text" id="totalnumber" value="${bk.totalnumber }" style=" margin-left: 0px; width: 95%; text-align: center;" /></td>
+                    <td><input name="currentnumber" type="text" id="currentnumber" value="${bk.currentnumber }" style=" margin-left: 0px; width: 95%; text-align: center;" /></td>
                     <td><input name="category" type="text" value="${bk.category }" style=" margin-left: 0px; width: 95%; text-align: center;" /></td>
                 </tr>
                 </c:forEach>
             </table>
             <input type="submit" value="Save" style="margin-left: 48%" />
         </form>
+<script type="text/javascript">
+function check(){
+	var totalnumber = document.getElementById('totalnumber').value;
+	var format = /[0-9]/;
+	if(!format.test(totalnumber)){
+		alert("Total Number must be a number!");
+		return false;
+	}
+	var currentnumber = document.getElementById('currentnumber').value;
+	if(!format.test(currentnumber)){
+		alert("Current Number must be a number!");
+		return false;
+	}
+}
+</script>
 </body>
 </html>

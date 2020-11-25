@@ -46,8 +46,10 @@
 		</div>
 	</nav>
 	<!-- 导航栏结束 -->
-		
-	<form action="${pageContext.request.contextPath }/rentbookInformation.do" class="form-horizontal" style="margin-top: 100px; margin-right:400px; margin-left:300px">
+	<input type="text" value="${overtime }" id="overtime" hidden="hidden">
+	<input type="text" value="${hasrent }" id="hasrent" hidden="hidden">
+	<input type="text" value="${rentonly }" id="rentonly" hidden="hidden">
+	<form action="${pageContext.request.contextPath }/rentbookInformation.do" onsubmit="return check()" class="form-horizontal" style="margin-top: 100px; margin-right:400px; margin-left:300px">
 		<div style="margin-bottom: 30px; font-size: 20px" align="center">
 			<label>Borrowing information</label>
 		</div>
@@ -104,6 +106,24 @@
 			</div>
 		</div>
 	</form>
-
+<script type="text/javascript">
+function check(){
+	var overtime = document.getElementById('overtime').value;
+	var hasrent = document.getElementById('hasrent').value;
+	var rentonly = document.getElementById('rentonly').value;
+	if(parseInt(overtime) > 0){
+		alert("You need to pay off your overtime books!");
+		return false;
+	}
+	if(parseInt(hasrent) >= 3){
+		alert("You have borrowed three books!");
+		return false;
+	}
+	if(parseInt(rentonly)){
+		alert("You can only borrow this book once!");
+		return false;
+	}
+}
+</script>
 </body>
 </html>

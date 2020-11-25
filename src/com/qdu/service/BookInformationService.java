@@ -63,5 +63,25 @@ public class BookInformationService {
 	public List<RentInformation> hasRent(String username) {
 		return bookInformationMapper.hasRent(username);
 	}
+
+	public List<RentInformation> checkRentOnlyByBookId(String username, int bookid) {
+		return bookInformationMapper.checkRentOnlyByBookId(username, bookid);
+	}
+
+	public int checkBookNumber(int bookid) {
+		return bookInformationMapper.checkBookNumber(bookid);
+	}
+
+	public void changeNumber(int numbernow, int bookid) {
+		bookInformationMapper.changeNumber(numbernow, bookid);
+	}
+
+	public int checkBookNumberByRentid(int rentid) {
+		return bookInformationMapper.checkBookNumberByRentid(rentid);
+	}
+
+	public void changeNumberByRengid(int numbernow, int rentid) {
+		bookInformationMapper.changeNumberByRengid(numbernow, rentid);
+	}
 	
 }

@@ -1,17 +1,20 @@
 package com.qdu.controller;
 
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.qdu.bean.Admin;
 import com.qdu.bean.User;
 import com.qdu.service.UserService;
 
@@ -22,12 +25,11 @@ public class LoginController {
 	private UserService userService;
 	
 	@RequestMapping(value = "/register.do", method = RequestMethod.POST)
-	public ModelAndView userRegister(User user) {
+	public ModelAndView userRegister(User user){
 		ModelAndView mav = new ModelAndView();
 		List<User> commonNameList = userService.checkNameCommon(user);
 		if(commonNameList.size() == 1) {
-			mav.setViewName("error");
-			mav.addObject("errorMessage", "用户名重复！!");
+			mav.addObject("errorMessage", "registererrpr");
 			return mav;
 		}
 		userService.userRegister(user);
@@ -36,7 +38,7 @@ public class LoginController {
 	}
 	
 	@RequestMapping(value = "/userLogin.do", method = RequestMethod.POST)
-	public ModelAndView userLogin(User user, HttpServletRequest request) {
+	public ModelAndView userLogin(User user, HttpServletRequest request, Model model,HttpServletResponse response) throws IOException {
 		ModelAndView mav = new ModelAndView();
 		List<User> list = userService.checkUserLogin(user);
 		if(list.size() == 1) {
@@ -46,8 +48,13 @@ public class LoginController {
 			session.setAttribute("username", user.getUsername());
 			return mav;
 		}
-		mav.setViewName("login_error");
-		mav.addObject("errorMessage", "用户名或者密码错误！");
+		response.setContentType("text/html;charset=utf-8");
+		PrintWriter out = response.getWriter();
+		String msg = null;
+		msg = "alert( 'Username or Password Wrong!' );location.href='login.jsp'";
+		out.print("<script type='text/javascript'>" + msg + "</script>");
+		out.flush();
+		out.close();
 		return mav;
 	}
 	

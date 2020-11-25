@@ -31,5 +31,8 @@ public interface AdMapper {
 	void add_user(User user);
 	void updateUser(User user);
 	List<User> getuserByID(int user_id);
+	void addOneBook(int rentid);
+	void deleteRentInformationOfUser(int bookid);
+	int selectTotalnumber(int bookid);
 	
 }

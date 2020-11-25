@@ -82,7 +82,7 @@
             </label>
         </div>
 <h2 style=" margin-left: 48%;">Add Book</h2>
-        <form action="${pageContext.request.contextPath }/add_book.do" method="post">
+        <form action="${pageContext.request.contextPath }/add_book.do" onsubmit="return check()" method="post">
             <table>
                 <tr>
                     <th>Book name</th>
@@ -98,11 +98,20 @@
                     <td><textarea name="description" rows="5" cols="20"></textarea></td>
                     <td><input name="publisher" type="text" style=" margin-left: 0px; width: 95%; text-align: center;" /></td>
                     <td><input name="category" type="text" style=" margin-left: 0px; width: 95%; text-align: center;" /></td>
-                    <td><input name="totalnumber" type="text" style=" margin-left: 0px; width: 95%; text-align: center;" /></td>
+                    <td><input name="totalnumber" id="totalnumber" type="text" style=" margin-left: 0px; width: 95%; text-align: center;" /></td>
                 </tr>
             </table>
             <input type="submit" value="Add" style="margin-left: 48%" />
         </form>
-
+<script type="text/javascript">
+function check(){
+	var totalnumber = document.getElementById('totalnumber').value;
+	var format = /[0-9]/;
+	if(!format.test(totalnumber)){
+		alert("Total Number must be a number!");
+		return false;
+	}
+}
+</script>
 </body>
 </html>

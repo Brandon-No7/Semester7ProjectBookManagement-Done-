@@ -10,4 +10,14 @@ public class ComponentController {
 	public String homepage() {
 		return "home";
 	}
+	
+	@RequestMapping("/backtouserlist.do")
+	public String backToUserList() {
+		return "UserList";
+	}
+	
+	@RequestMapping("/backtoborrowingrecords.do")
+	public String backToBorrowingRecords() {
+		return "BorrowingRecords";
+	}
 }

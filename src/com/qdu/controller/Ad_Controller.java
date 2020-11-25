@@ -1,7 +1,10 @@
 package com.qdu.controller;
 
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.List;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.swing.JOptionPane;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +27,7 @@ public class Ad_Controller {
 	private AdService adService;
 
 	@RequestMapping(value = "/adminLogin.do", method = RequestMethod.POST)
-	public ModelAndView adminLogin(Admin admin, Model model) {
+	public ModelAndView adminLogin(Admin admin, Model model,HttpServletResponse response) throws IOException {
 		ModelAndView mav = new ModelAndView();
 		List<Admin> list = adService.checkAdminLogin(admin);
 		if(list.size() == 1) {
@@ -32,8 +35,13 @@ public class Ad_Controller {
 			model.addAttribute("book_list", adService.getAllBooks());
 			return mav;
 		}
-		mav.setViewName("error");
-		mav.addObject("errorMessage", "用户名或者密码错误！");
+		response.setContentType("text/html;charset=utf-8");
+		PrintWriter out = response.getWriter();
+		String msg = null;
+		msg = "alert( 'Username or Password Wrong!' );location.href='login.jsp'";
+		out.print("<script type='text/javascript'>" + msg + "</script>");
+		out.flush();
+		out.close();
 		return mav;
 	}
 	@RequestMapping(value = "/backtobooklist.do", method = RequestMethod.GET)
@@ -46,21 +54,32 @@ public class Ad_Controller {
 	
 	
 	@RequestMapping(value = "/delete_book.do/{bookid}.do", method = RequestMethod.GET)
-	public ModelAndView deleteBooks(@PathVariable int bookid, Model model) {
+	public ModelAndView deleteBooks(@PathVariable int bookid, Model model, HttpServletResponse response) throws IOException {
 		ModelAndView mav = new ModelAndView();
 		List<Book> list = adService.selectBooks(bookid);
 		if(list.size() == 1)
 		{
-			JOptionPane.showMessageDialog(null,"图书"+list.get(0).getBookid()+"."+list.get(0).getBookname()+ "删除成功");
 			adService.deleteBooks(bookid);
-			
+			adService.deleteRentInformationOfUser(bookid);
+			response.setContentType("text/html;charset=utf-8");
+			PrintWriter out = response.getWriter();
+			String msg = null;
+			msg = "alert( 'Delete success!' );location.href='/BookManagementSystem/backtobooklist.do'";
+			out.print("<script type='text/javascript'>" + msg + "</script>");
+			out.flush();
+			out.close();
 			mav.setViewName("BookList");
 			model.addAttribute("book_list", adService.getAllBooks());
 			return mav;
 		}
 		else
 		{
-			JOptionPane.showMessageDialog(null, "所删除的图书不存在");
+			PrintWriter out = response.getWriter();
+			String msg = null;
+			msg = "alert( 'Delete failed!' );location.href='/BookManagementSystem/backtobooklist.do'";
+			out.print("<script type='text/javascript'>" + msg + "</script>");
+			out.flush();
+			out.close();
 			mav.setViewName("BookList");
 			model.addAttribute("book_list", adService.getAllBooks());
 			return mav;
@@ -77,13 +96,18 @@ public class Ad_Controller {
 	
 	
 	@RequestMapping(value = "/delete_user.do/{id}.do", method = RequestMethod.GET)
-	public ModelAndView deleteUser(@PathVariable int id, Model model) {
+	public ModelAndView deleteUser(@PathVariable int id, Model model, HttpServletResponse response) throws IOException {
 		ModelAndView mav = new ModelAndView();
 		List<User> list = adService.selectUser(id);
 		if(list.size() == 1)
 		{
 			adService.deleteUser(id);
-			JOptionPane.showMessageDialog(null, "用户"+list.get(0).getId()+"."+list.get(0).getUsername()+"删除成功");
+			PrintWriter out = response.getWriter();
+			String msg = null;
+			msg = "alert( 'Delete success!' );location.href='/BookManagementSystem/go_to_userinfo.do'";
+			out.print("<script type='text/javascript'>" + msg + "</script>");
+			out.flush();
+			out.close();
 			mav.setViewName("UserList");
 			model.addAttribute("user_list", adService.getAllUsers());
 			return mav;
@@ -102,17 +126,21 @@ public class Ad_Controller {
 		mav.setViewName("BorrowingRecords");
 		model.addAttribute("borrow_list", adService.selectUserByUserName(username));
 		return mav;
-
 	}
 	
 	@RequestMapping(value = "/delete_borrow.do/{rentid}.do,{username}.do", method = RequestMethod.GET)
-	public ModelAndView DeleteBorrowRecord(@PathVariable int rentid, @PathVariable String username, Model model) {
+	public ModelAndView DeleteBorrowRecord(@PathVariable int rentid, @PathVariable String username, Model model, HttpServletResponse response) throws IOException {
 		ModelAndView mav = new ModelAndView();
 		List<Borrow> blist = adService.selectBorrowByRentid(rentid);
 		if(blist.size() == 1)
 		{
 			adService.deleteBorrowRecord(rentid);
-			JOptionPane.showMessageDialog(null, "编号"+blist.get(0).getRentid()+"  用户"+blist.get(0).getUsername()+" 借"+blist.get(0).getBookid()+"."+blist.get(0).getBookname()+"信息删除成功");
+			PrintWriter out = response.getWriter();
+			String msg = null;
+			msg = "alert( 'Delete success!' );location.href='/BookManagementSystem/backtoborrowingrecords.do'";
+			out.print("<script type='text/javascript'>" + msg + "</script>");
+			out.flush();
+			out.close();
 			mav.setViewName("BorrowingRecords");
 			model.addAttribute("borrow_list", adService.selectUserByUserName(username));
 			return mav;
@@ -125,13 +153,13 @@ public class Ad_Controller {
 		}
 	}
 	@RequestMapping(value = "/set_state1.do/{rentid}.do,{username}.do", method = RequestMethod.GET)
-	public ModelAndView SetState1(@PathVariable int rentid, @PathVariable String username, Model model) {
+	public ModelAndView SetState1(@PathVariable int rentid, @PathVariable String username, Model model, HttpServletResponse response) throws IOException {
 		ModelAndView mav = new ModelAndView();
 		List<Borrow> blist = adService.selectBorrowByRentid(rentid);
 		if(blist.size() == 1)
 		{
 			adService.updateBorrowRecordState1(rentid);
-			JOptionPane.showMessageDialog(null, "修改成功");
+			JOptionPane.showMessageDialog(null, "Update success!");
 			mav.setViewName("BorrowingRecords");
 			model.addAttribute("borrow_list", adService.selectUserByUserName(username));
 			return mav;
@@ -144,13 +172,14 @@ public class Ad_Controller {
 		}
 	}
 	@RequestMapping(value = "/set_state2.do/{rentid}.do,{username}.do", method = RequestMethod.GET)
-	public ModelAndView SetState2(@PathVariable int rentid, @PathVariable String username, Model model) {
+	public ModelAndView SetState2(@PathVariable int rentid, @PathVariable String username, Model model, HttpServletResponse response) throws IOException {
 		ModelAndView mav = new ModelAndView();
 		List<Borrow> blist = adService.selectBorrowByRentid(rentid);
 		if(blist.size() == 1)
 		{
+			adService.addOneBook(rentid);
 			adService.updateBorrowRecordState2(rentid);
-			JOptionPane.showMessageDialog(null, "修改成功");
+			JOptionPane.showMessageDialog(null, "Update success!");
 			mav.setViewName("BorrowingRecords");
 			model.addAttribute("borrow_list", adService.selectUserByUserName(username));
 			return mav;
@@ -237,39 +266,49 @@ public class Ad_Controller {
 	
 	/*-------------------------------------------------------------------------------------------*/
 	@RequestMapping(value = "/add_book.do", method = RequestMethod.POST)
-	public ModelAndView add_book(Book book, Model model){
+	public ModelAndView add_book(Book book, Model model, HttpServletResponse response) throws IOException{
 		adService.add_Book(book);
 		ModelAndView mav = new ModelAndView();
-		JOptionPane.showMessageDialog(null, "添加成功");
+		PrintWriter out = response.getWriter();
+		String msg = null;
+		msg = "alert( 'Update success!' );location.href='/BookManagementSystem/backtobooklist.do'";
+		out.print("<script type='text/javascript'>" + msg + "</script>");
+		out.flush();
+		out.close();
 		mav.setViewName("BookList");
 		model.addAttribute("book_list", adService.getAllBooks());
 		return mav;
 	}
 	
 	@RequestMapping(value = "/add_user.do", method = RequestMethod.POST)
-	public ModelAndView add_user(User user, Model model){
+	public ModelAndView add_user(User user, Model model, HttpServletResponse response) throws IOException{
 		adService.add_user(user);
 		ModelAndView mav = new ModelAndView();
-		JOptionPane.showMessageDialog(null, "添加成功");
+		PrintWriter out = response.getWriter();
+		String msg = null;
+		msg = "alert( 'Add success!' );location.href='/BookManagementSystem/backtouserlist.do'";
+		out.print("<script type='text/javascript'>" + msg + "</script>");
+		out.flush();
+		out.close();
 		mav.setViewName("UserList");
 		model.addAttribute("user_list", adService.getAllUsers());
 		return mav;
 	}
 	
 	@RequestMapping(value="/update_user.do",method=RequestMethod.POST)
-	public ModelAndView update_user(User user, Model model){
+	public ModelAndView update_user(User user, Model model, HttpServletResponse response) throws IOException{
 		adService.update_user(user);
 		ModelAndView mav = new ModelAndView();
-		JOptionPane.showMessageDialog(null, "修改成功");
+		JOptionPane.showMessageDialog(null, "Update success!");
 		mav.setViewName("UserList");
 		model.addAttribute("user_list", adService.getAllUsers());
 		return mav;
 	}
 	@RequestMapping(value = "/update_book.do", method = RequestMethod.POST)
-	public ModelAndView update_book(Book book,Model model){
+	public ModelAndView update_book(Book book,Model model, HttpServletResponse response) throws IOException{
 		adService.update_Book(book);
+		JOptionPane.showMessageDialog(null, "Update success!");
 		ModelAndView mav = new ModelAndView();
-		JOptionPane.showMessageDialog(null, "修改成功");
 		mav.setViewName("BookList");
 		model.addAttribute("book_list", adService.getAllBooks());
 		return mav;

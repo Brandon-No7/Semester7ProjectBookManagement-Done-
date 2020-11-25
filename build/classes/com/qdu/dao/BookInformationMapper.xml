@@ -32,7 +32,7 @@
 		select * from user_book where username = #{username} and state = 1
 	</select>
 	<select id="userOvertime" resultType="com.qdu.bean.RentInformation">
-		select * from user_book where enddate &lt; #{datenow} and username = #{username} and (state = 1 or state = 0)
+		select * from user_book where enddate &lt; #{datenow} and username = #{username} and state = 1
 	</select>
 	<select id="userReturnbook" parameterType="String" resultType="com.qdu.bean.RentInformation">
 		select * from user_book where username = #{username} and state = 2
@@ -40,4 +40,19 @@
 	<select id="hasRent" parameterType="String" resultType="com.qdu.bean.RentInformation">
 		select * from user_book where username = #{username}
 	</select>
+	<select id="checkRentOnlyByBookId" resultType="com.qdu.bean.RentInformation">
+		select * from user_book where username = #{username} and bookid = #{bookid}
+	</select>
+	<select id="checkBookNumber" resultType="int">
+		select currentnumber from books where bookid = #{bookid}
+	</select>
+	<update id="changeNumber">
+		update books set currentnumber = #{numbernow} where bookid = #{bookid}
+	</update>
+	<select id="checkBookNumberByRentid" parameterType="int" resultType="int">
+		select currentnumber from books where bookid = (select bookid from user_book where rentid = #{rentid})
+	</select>
+	<update id="changeNumberByRengid">
+		update books set currentnumber = #{numbernow} where bookid = (select bookid from user_book where rentid = #{rentid})
+	</update>
 </mapper>

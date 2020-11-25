@@ -1,14 +1,18 @@
 package com.qdu.controller;
 
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -34,11 +38,23 @@ public class BookController {
 	}
 	
 	@RequestMapping(value = "/rent.do")
-	public ModelAndView rentBook(HttpServletRequest request) {
+	public ModelAndView rentBook(HttpServletRequest request, Model model, HttpServletResponse response) throws IOException {
 		ModelAndView mav = new ModelAndView("rent");
 		HttpSession session = request.getSession();
 		List<Book> book = bookInformationService.searchBookById((String)request.getParameter("bookId"));
+		if(book.get(0).getCurrentnumber() == 0) {
+			response.setContentType("text/html;charset=utf-8");
+			PrintWriter out = response.getWriter();
+			String msg = null;
+			msg = "alert( 'The book has been borrowed out!' );location.href='home.do'";
+			out.print("<script type='text/javascript'>" + msg + "</script>");
+			out.flush();
+			out.close();
+		}
 		mav.addObject("booklist", book);
+		mav.addObject("overtime", bookInformationService.userOvertime(new Date(), (String)request.getSession().getAttribute("username")).size());
+		mav.addObject("hasrent", bookInformationService.hasRent((String)request.getSession().getAttribute("username")).size());
+		mav.addObject("rentonly", bookInformationService.checkRentOnlyByBookId((String)request.getSession().getAttribute("username"),Integer.parseInt((String)request.getParameter("bookId"))).size());
 		mav.addObject("username", session.getAttribute("username"));
 		return mav;
 	}
@@ -55,25 +71,10 @@ public class BookController {
 		rent.setDay(Integer.parseInt(request.getParameter("time")));
 		rent.setUsername(request.getParameter("username"));
 		rent.setState(0);
-		List<RentInformation> list = bookInformationService.userOvertime(new Date(), (String)request.getSession().getAttribute("username"));
-		if(list.size()>0) {
-			mav.setViewName("rent_error");
-			mav.addObject("error", "You need to pay off your overtime books!");
-			return mav;
-		}
-		List<RentInformation> hasrent = bookInformationService.hasRent((String)request.getSession().getAttribute("username"));
-		if(hasrent.size()>=3) {
-			mav.setViewName("rent_error");
-			mav.addObject("error", "You have borrowed three books!");
-			return mav;
-		}
-		List<RentInformation> rentlist = bookInformationService.checkRentInformationOnly(rent);
-		if(rentlist.size()!=0) {
-			mav.setViewName("rent_error");
-			mav.addObject("error", "You can only borrow this book once!");
-			return mav;
-		}
 		mav.setViewName("home");
+		int number = bookInformationService.checkBookNumber(Integer.parseInt(request.getParameter("bookid")));
+		int numbernow = number - 1;
+		bookInformationService.changeNumber(numbernow, Integer.parseInt(request.getParameter("bookid")));
 		bookInformationService.submitRentInformation(rent);
 		return mav;
 	}
@@ -107,6 +108,9 @@ public class BookController {
 	@RequestMapping("/cancelorder.do")
 	public ModelAndView cancelOrder(HttpServletRequest request) {
 		ModelAndView mav = new  ModelAndView("home");
+		int number = bookInformationService.checkBookNumberByRentid(Integer.parseInt(request.getParameter("rentId")));
+		int numbernow = number + 1;
+		bookInformationService.changeNumberByRengid(numbernow, Integer.parseInt(request.getParameter("rentId")));
 		bookInformationService.cancelOrder((String)request.getParameter("rentId"));
 		return mav;
 	}

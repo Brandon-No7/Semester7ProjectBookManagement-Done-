@@ -34,4 +34,14 @@ public interface BookInformationMapper {
 
 	List<RentInformation> hasRent(String username);
 
+	List<RentInformation> checkRentOnlyByBookId(@Param("username")String username, @Param("bookid")int bookid);
+
+	int checkBookNumber(int bookid);
+
+	void changeNumber(@Param("numbernow")int numbernow, @Param("bookid")int bookid);
+
+	int checkBookNumberByRentid(int rentid);
+
+	void changeNumberByRengid(@Param("numbernow")int numbernow, @Param("rentid")int rentid);
+
 }
